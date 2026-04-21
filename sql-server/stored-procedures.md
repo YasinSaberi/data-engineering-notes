@@ -43,7 +43,42 @@ FROM [SchemaName].[TableName]
 WHERE Id = @InputParam1;
 
 -- Additional Logic (Insert/Update/Delete)
+
 END
+```
+### SCOPE_IDENTITY():
+1. A system function that return the last generated identity value in the present scope.
 
+### Usage example for AdvantureWorks2012
+```sql
+CREATE OR ALTER PROCEDURE Production.uspCreateProductReview
+    @comments NVARCHAR(3850), 
+    @rating INT,
+    @emailAddress NVARCHAR(50), 
+    @reviewerName NVARCHAR(50), 
+    @productID INT,
+    @reviewID INT OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
 
-##.
+    INSERT INTO Production.ProductReview (
+        Comments,
+        Rating,
+        EmailAddress,
+        ReviewDate,        
+        ReviewerName,
+        ProductID
+    )
+    VALUES (
+        @comments,
+        @rating,
+        @emailAddress,
+        GETDATE(),     
+        @reviewerName,
+        @productID
+    );
+
+    SET @reviewID = SCOPE_IDENTITY();
+END;
+```
