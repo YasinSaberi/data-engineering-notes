@@ -47,7 +47,7 @@ WHERE Id = @InputParam1;
 END
 ```
 ### SCOPE_IDENTITY():
-1. A system function that return the last generated identity value in the present scope.
+A system function that return the last generated identity value in the present scope.
 
 ### Usage example for AdvantureWorks2012
 ```sql
