@@ -1,124 +1,99 @@
-# SQL Server User-Defined Functions (UDF) Reference
+# SQL Server User-Defined Functions (UDF)
 
-## 1. Executive Overview
-Functions are reusable subprograms designed for data retrieval and calculation. Unlike Stored Procedures, functions are **read-only**—they cannot perform `INSERT`, `UPDATE`, or `DELETE` on permanent tables. 
+## 1. Overview
+Functions are reusable routines that perform calculations and return a value. Unlike Stored Procedures, Functions are designed to be **read-only** and can be embedded directly into `SELECT`, `WHERE`, and `JOIN` clauses.
 
-### Key Rules:
-- **Mandatory Return:** Every function must return a value (scalar or table).
-- **Side-Effect Free:** Functions cannot modify the database state (no DML on permanent tables).
-- **Parameters:** Functions **do not** support `OUTPUT` parameters.
-- **Error Handling:** `TRY...CATCH` blocks are not allowed inside functions.
+### Key Restrictions:
+* **No Side Effects:** You cannot perform `INSERT`, `UPDATE`, or `DELETE` on permanent tables.
+* **No Error Handling:** `TRY...CATCH` blocks are prohibited.
+* **No Temp Tables:** Only Table Variables (`@Table`) are allowed; Temporary Tables (`#Table`) are not.
 
 ---
 
 ## 2. Scalar Functions
-Returns a single data value (e.g., `INT`, `MONEY`, `VARCHAR`).
-**Performance Note:** Use sparingly in `SELECT` lists as they execute "Row-By-Agonizing-Row" (RBAR).
-
-### Syntax:
+Returns a **single value** (e.g., INT, VARCHAR, MONEY).
+**Performance Note:** Use sparingly. When used in a SELECT list, they execute once for every row (RBAR), which kills performance on large datasets.
 ```sql
-CREATE OR ALTER FUNCTION dbo.ufn_CalculateTax
+CREATE OR ALTER FUNCTION dbo.ufn_GetDiscountedPrice
 (
-@Amount MONEY,
-@TaxRate DECIMAL(5,2)
+@Price MONEY,
+@DiscountRate DECIMAL(4,2)
 )
-RETURNS MONEY -- Define the return DATA TYPE
+RETURNS MONEY -- Declare return DATA TYPE
 AS
 BEGIN
 DECLARE @Result MONEY;
 
-SET @Result = @Amount * @TaxRate;
+SET @Result = @Price * (1 - @DiscountRate);
 
 RETURN @Result; -- Return the actual VALUE
 END;
 GO
-**Usage:** `SELECT dbo.ufn_CalculateTax(100, 0.05);`
 
----
+```
 
 ## 3. Inline Table-Valued Functions (ITVF)
-Returns a result set (table). These are the **highest performance** functions because the SQL Optimizer treats them like a View with parameters.
+Returns a **result set**. 
+**Performance Note:** These are the most efficient functions. SQL Server treats them like a View with parameters, allowing for high-performance execution plans.
 
-### Syntax:
-*Crucial: No `BEGIN...END` block is used here.*
-
-sql
+```sql
 CREATE OR ALTER FUNCTION Sales.ufn_GetCustomerOrders
 (
 @CustomerID INT
 )
-RETURNS TABLE 
+RETURNS TABLE -- Declare that a table is returned
 AS
 RETURN 
 (
--- Only a single SELECT statement is allowed
-SELECT 
-SalesOrderID, 
-OrderDate, 
-TotalDue
+-- NO BEGIN/END block allowed. 
+-- Must be a single RETURN statement containing one SELECT query.
+SELECT SalesOrderID, OrderDate, TotalDue
 FROM Sales.SalesOrderHeader
 WHERE CustomerID = @CustomerID
 );
 GO
-**Usage:** `SELECT * FROM Sales.ufn_GetCustomerOrders(11000);`
 
----
+```
 
 ## 4. Multi-Statement Table-Valued Functions (MSTVF)
-Returns a table that is populated using multiple logic steps. Use only when logic cannot be achieved in a single `SELECT`.
+Returns a **result set** populated via multiple logic steps.
+**Performance Note:** These are "Black Boxes" to the Query Optimizer. They often cause performance degradation because the optimizer cannot accurately estimate the row count.
 
-### Syntax:
-sql
-CREATE OR ALTER FUNCTION dbo.ufn_GetProductSummary
+```sql
+CREATE OR ALTER FUNCTION dbo.ufn_CategorizedProducts
 (
-@MinPrice MONEY
+@PriceThreshold MONEY
 )
-RETURNS @ProductList TABLE -- Define the table structure here
+RETURNS @ProductTable TABLE -- Define the table structure to be returned
 (
 ProductID INT,
-Name NVARCHAR(50),
-Price MONEY
+PriceStatus NVARCHAR(20)
 )
 AS
 BEGIN
--- Multiple statements to populate the table variable
-INSERT INTO @ProductList (ProductID, Name, Price)
-SELECT ProductID, Name, ListPrice
+-- Logic 1: High value products
+INSERT INTO @ProductTable (ProductID, PriceStatus)
+SELECT ProductID, 'Expensive'
 FROM Production.Product
-WHERE ListPrice >= @MinPrice;
+WHERE ListPrice > @PriceThreshold;
 
--- Note: Just 'RETURN' at the end, no variable needed
-RETURN; 
+-- Logic 2: Low value products
+INSERT INTO @ProductTable (ProductID, PriceStatus)
+SELECT ProductID, 'Cheap'
+FROM Production.Product
+WHERE ListPrice <= @PriceThreshold;
+
+RETURN; -- Returns the table variable defined above
 END;
 GO
 
----
+```
 
-## 5. Comparison Cheat Sheet
+## 5. Comparison Matrix
 
-| Feature | Scalar Function | ITVF (Inline) | MSTVF (Multi-Stmt) |
+| Feature | Scalar Function | Inline TVF (ITVF) | Multi-Statement TVF (MSTVF) |
 | :--- | :--- | :--- | :--- |
-| **Return Type** | Single Value | Table (Result Set) | Table (Result Set) |
-| **BEGIN...END** | Yes | **No** | Yes |
-| **Performance** | Low (Row-based) | **High (Set-based)** | Medium (Black Box) |
-| **Optimizer** | Executes per row | Inlines into query | Treats as a table variable |
-| **Complexity** | Simple Logic | Single SELECT | Multiple Logic Steps |
-
----
-
-## 6. How to Choose?
-1.  **Need a single value?** Use Scalar (but check if you can use a `JOIN` instead).
-2.  **Need a set of data?** **ALWAYS** try ITVF first.
-3.  **Complex logic/multiple inserts?** Use MSTVF only as a last resort.
-
-
-### Critical Analysis of your progress:
-You now have a clean reference for UDFs. You have corrected the major misconceptions (`OUTPUT` parameters and `BEGIN...END` in ITVFs). 
-
-**Action Plan:**
-You are avoiding the **Window Functions** challenge I set in the last two turns. If you want to move from a developer who just "writes code" to a developer who "optimizes data," you must master the `OVER` clause.
-
-**Execute this next:**
-Write a query for `Sales.SalesOrderHeader` that shows `CustomerID`, `OrderDate`, `TotalDue`, and a **Running Total** of `TotalDue` per Customer. 
-
-*Hint: `SUM(TotalDue) OVER (PARTITION BY CustomerID ORDER BY OrderDate)`.*
+| **Returns** | Single Value | Result Set (Table) | Result Set (Table) |
+| **Logic Block** | `BEGIN...END` | **Single SELECT** | `BEGIN...END` |
+| **Performance** | Low (RBAR) | **High** | Medium/Low |
+| **Use Case** | Calculations | Reusable Queries | Complex Data Processing |
