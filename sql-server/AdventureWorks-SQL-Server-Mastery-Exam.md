@@ -277,10 +277,3 @@ sql
 -- Write your code here
 
 ---
-
-**If you want more sections (e.g., temporal tables, CDC, partitioning, or query tuning drills), say "continue".**
-
-This exam is intentionally dense and unforgiving.
-
-
-Copy the entire block above (including the triple backticks) and paste it directly into your GitHub repo as a `.md` file.
