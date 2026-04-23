@@ -15,7 +15,7 @@ Window functions perform calculations across a set of rows related to the curren
 [ORDER BY order_column [ASC|DESC]]
 [ROWS|RANGE frame_specification]
 )
-
+```
 **Key components:**
 - **Window function:** `ROW_NUMBER()`, `RANK()`, `SUM()`, `AVG()`, etc.
 - **PARTITION BY:** Divides result set into groups (like `GROUP BY` but doesn't collapse rows).
@@ -24,12 +24,12 @@ Window functions perform calculations across a set of rows related to the curren
 
 ### 1.2 Window Functions vs. GROUP BY
 
-sql
+```sql
 -- GROUP BY: Collapses rows
 SELECT Department, AVG(Salary) AS AvgSalary
 FROM Employees
 GROUP BY Department;
-
+```
 -- Result: One row per department
 -- Department | AvgSalary
 -- Sales      | 60000
@@ -48,13 +48,13 @@ FROM Employees;
 
 ### 1.3 Logical Query Processing Order
 
-sql
+```sql
 SELECT Department, Salary,
 ROW_NUMBER() OVER (ORDER BY Salary DESC) AS RowNum
 FROM Employees
 WHERE Salary > 50000
 ORDER BY RowNum;
-
+```
 **Execution order:**
 1. `FROM` Employees
 2. `WHERE` Salary > 50000
@@ -69,13 +69,13 @@ ORDER BY RowNum;
 
 ### 2.1 ROW_NUMBER() - Sequential Numbering
 
-sql
+```sql
 -- Assign unique sequential numbers
 SELECT EmployeeID, Name, Department, Salary,
 ROW_NUMBER() OVER (ORDER BY Salary DESC) AS OverallRank,
 ROW_NUMBER() OVER (PARTITION BY Department ORDER BY Salary DESC) AS DeptRank
 FROM Employees;
-
+```
 **Output:**
 
 EmployeeID | Name  | Department | Salary | OverallRank | DeptRank
@@ -88,12 +88,12 @@ EmployeeID | Name  | Department | Salary | OverallRank | DeptRank
 
 ### 2.2 RANK() - Ranking with Gaps
 
-sql
+```sql
 -- Same values get same rank, next rank skips numbers
 SELECT Name, Score,
 RANK() OVER (ORDER BY Score DESC) AS Rank
 FROM TestScores;
-
+```
 **Output:**
 
 Name  | Score | Rank
@@ -106,7 +106,7 @@ Dave  | 85    | 4
 
 ### 2.3 DENSE_RANK() - Ranking Without Gaps
 
-sql
+```sql
 -- Same values get same rank, next rank is consecutive
 SELECT Name, Score,
 DENSE_RANK() OVER (ORDER BY Score DESC) AS DenseRank
@@ -119,17 +119,17 @@ Alice | 95    | 1
 Bob   | 95    | 1
 Carol | 90    | 2  -- No gap
 Dave  | 85    | 3
-
+```
 **Use case:** Top N per category without gaps.
 
 ### 2.4 NTILE(n) - Divide into Buckets
 
-sql
+```sql
 -- Divide employees into 4 salary quartiles
 SELECT Name, Salary,
 NTILE(4) OVER (ORDER BY Salary) AS SalaryQuartile
 FROM Employees;
-
+```
 **Output:**
 
 Name  | Salary | SalaryQuartile
@@ -159,19 +159,19 @@ Henry | 110000 | 4
 
 ### 3.1 Running Totals
 
-sql
+```sql
 -- Calculate cumulative sales by date
 SELECT OrderDate, Amount,
 SUM(Amount) OVER (ORDER BY OrderDate 
 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS RunningTotal
 FROM Orders;
-
+```
 **Simplified syntax (default frame):**
-sql
+```sql
 SELECT OrderDate, Amount,
 SUM(Amount) OVER (ORDER BY OrderDate) AS RunningTotal
 FROM Orders;
-
+```
 **Output:**
 
 OrderDate  | Amount | RunningTotal
@@ -181,13 +181,13 @@ OrderDate  | Amount | RunningTotal
 
 ### 3.2 Moving Averages
 
-sql
+```sql
 -- 7-day moving average of sales
 SELECT OrderDate, Amount,
 AVG(Amount) OVER (ORDER BY OrderDate 
 ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS MovingAvg7Day
 FROM DailySales;
-
+```
 **Output:**
 
 OrderDate  | Amount | MovingAvg7Day
@@ -199,7 +199,7 @@ OrderDate  | Amount | MovingAvg7Day
 
 ### 3.3 Comparative Analysis (Current vs. Previous)
 
-sql
+```sql
 -- Compare each month's sales to previous month
 SELECT Month, Sales,
 LAG(Sales, 1) OVER (ORDER BY Month) AS PrevMonthSales,
@@ -207,7 +207,7 @@ Sales - LAG(Sales, 1) OVER (ORDER BY Month) AS SalesChange,
 CAST(100.0 * (Sales - LAG(Sales, 1) OVER (ORDER BY Month)) / 
 LAG(Sales, 1) OVER (ORDER BY Month) AS DECIMAL(5,2)) AS PctChange
 FROM MonthlySales;
-
+```
 **Output:**
 
 Month   | Sales | PrevMonthSales | SalesChange | PctChange
@@ -217,14 +217,14 @@ Month   | Sales | PrevMonthSales | SalesChange | PctChange
 
 ### 3.4 Partition-Level Aggregates
 
-sql
+```sql
 -- Show each employee's salary vs. department average and total
 SELECT EmployeeID, Name, Department, Salary,
 AVG(Salary) OVER (PARTITION BY Department) AS DeptAvg,
 SUM(Salary) OVER (PARTITION BY Department) AS DeptTotal,
 CAST(100.0 * Salary / SUM(Salary) OVER (PARTITION BY Department) AS DECIMAL(5,2)) AS PctOfDeptTotal
 FROM Employees;
-
+```
 **Output:**
 
 EmployeeID | Name  | Department | Salary | DeptAvg | DeptTotal | PctOfDeptTotal
@@ -239,52 +239,52 @@ EmployeeID | Name  | Department | Salary | DeptAvg | DeptTotal | PctOfDeptTotal
 
 ### 4.1 LAG() - Access Previous Row
 
-sql
+```sql
 -- Compare current price to previous day
 SELECT Date, StockPrice,
 LAG(StockPrice, 1) OVER (ORDER BY Date) AS PrevDayPrice,
 LAG(StockPrice, 1, 0) OVER (ORDER BY Date) AS PrevDayPriceWithDefault
 FROM StockPrices;
-
+```
 **Syntax:** `LAG(column, offset, default_value)`
 - `offset`: Number of rows back (default: 1)
 - `default_value`: Value when no previous row exists (default: NULL)
 
 ### 4.2 LEAD() - Access Next Row
 
-sql
+```sql
 -- Show current and next appointment time
 SELECT PatientID, AppointmentTime,
 LEAD(AppointmentTime, 1) OVER (ORDER BY AppointmentTime) AS NextApptTime,
 DATEDIFF(MINUTE, AppointmentTime, 
 LEAD(AppointmentTime, 1) OVER (ORDER BY AppointmentTime)) AS MinutesUntilNext
 FROM Appointments;
-
+```
 ### 4.3 Multi-Row Offset
 
-sql
+```sql
 -- Compare current quarter to same quarter last year (4 quarters back)
 SELECT Year, Quarter, Revenue,
 LAG(Revenue, 4) OVER (ORDER BY Year, Quarter) AS SameQuarterLastYear,
 Revenue - LAG(Revenue, 4) OVER (ORDER BY Year, Quarter) AS YoYChange
 FROM QuarterlyRevenue;
-
+```
 ### 4.4 Partitioned Offset Functions
 
-sql
+```sql
 -- Compare each product's price to its previous price (per product)
 SELECT ProductID, Date, Price,
 LAG(Price, 1) OVER (PARTITION BY ProductID ORDER BY Date) AS PrevPrice,
 Price - LAG(Price, 1) OVER (PARTITION BY ProductID ORDER BY Date) AS PriceChange
 FROM ProductPrices;
-
+```
 ---
 
 ## Phase 5: Frame Specification - ROWS vs. RANGE
 
 ### 5.1 Frame Clause Syntax
 
-sql
+```sql
 { ROWS | RANGE } BETWEEN <start> AND <end>
 
 -- Start/End options:
@@ -293,16 +293,16 @@ sql
 -- CURRENT ROW: Current row
 -- N FOLLOWING: N rows after current
 -- UNBOUNDED FOLLOWING: Last row in partition
-
+```
 ### 5.2 ROWS - Physical Row Count
 
-sql
+```sql
 -- Sum of current row and 2 preceding rows (3-row window)
 SELECT OrderDate, Amount,
 SUM(Amount) OVER (ORDER BY OrderDate 
 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS Last3DaysTotal
 FROM Orders;
-
+```
 **Output:**
 
 OrderDate  | Amount | Last3DaysTotal
@@ -313,20 +313,20 @@ OrderDate  | Amount | Last3DaysTotal
 
 ### 5.3 RANGE - Logical Value Range
 
-sql
+```sql
 -- Sum all rows with OrderDate within 7 days before current row
 SELECT OrderDate, Amount,
 SUM(Amount) OVER (ORDER BY OrderDate 
 RANGE BETWEEN INTERVAL 7 DAY PRECEDING AND CURRENT ROW) AS Last7DaysTotal
 FROM Orders;
-
+```
 **Critical difference:**
 - `ROWS`: Counts physical rows (always includes exactly N rows if available)
 - `RANGE`: Includes all rows with values within specified range (can be 0 to many rows)
 
 ### 5.4 Default Frame Behavior
 
-sql
+```sql
 -- These are equivalent:
 SELECT SUM(Amount) OVER (ORDER BY OrderDate) AS RunningTotal
 FROM Orders;
@@ -341,10 +341,10 @@ FROM Orders;
 -- Equivalent to:
 SELECT SUM(Amount) OVER (ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS GrandTotal
 FROM Orders;
-
+```
 ### 5.5 Common Frame Patterns
 
-sql
+```sql
 -- Running total
 SUM(Amount) OVER (ORDER BY Date ROWS UNBOUNDED PRECEDING)
 
@@ -359,14 +359,14 @@ SUM(Amount) OVER (ORDER BY Date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
 
 -- Entire partition (all rows)
 SUM(Amount) OVER (ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)
-
+```
 ---
 
 ## Phase 6: Advanced Patterns
 
 ### 6.1 Top N Per Group
 
-sql
+```sql
 -- Get top 3 highest-paid employees per department
 WITH RankedEmployees AS (
 SELECT EmployeeID, Name, Department, Salary,
@@ -376,10 +376,10 @@ FROM Employees
 SELECT EmployeeID, Name, Department, Salary
 FROM RankedEmployees
 WHERE Rank <= 3;
-
+```
 ### 6.2 Deduplication (Keep First/Last)
 
-sql
+```sql
 -- Remove duplicate orders, keep most recent per customer
 WITH DeduplicatedOrders AS (
 SELECT OrderID, CustomerID, OrderDate, Amount,
@@ -392,10 +392,10 @@ SELECT OrderID
 FROM DeduplicatedOrders 
 WHERE RowNum > 1
 );
-
+```
 ### 6.3 Gap and Island Detection
 
-sql
+```sql
 -- Find consecutive date ranges (islands)
 WITH DateGroups AS (
 SELECT Date, 
@@ -408,7 +408,7 @@ COUNT(*) AS ConsecutiveDays
 FROM DateGroups
 GROUP BY GroupID
 ORDER BY StartDate;
-
+```
 **Example:**
 
 Input dates: 2024-01-01, 2024-01-02, 2024-01-03, 2024-01-05, 2024-01-06
@@ -420,16 +420,16 @@ StartDate  | EndDate    | ConsecutiveDays
 
 ### 6.4 Conditional Aggregation with Window Functions
 
-sql
+```sql
 -- Running total of only positive values
 SELECT Date, Amount,
 SUM(CASE WHEN Amount > 0 THEN Amount ELSE 0 END) 
 OVER (ORDER BY Date) AS RunningPositiveTotal
 FROM Transactions;
-
+```
 ### 6.5 Multiple Window Specifications
 
-sql
+```sql
 -- Use WINDOW clause to avoid repetition (SQL Server 2022+)
 SELECT EmployeeID, Name, Salary,
 AVG(Salary) OVER w AS DeptAvg,
@@ -445,7 +445,7 @@ AVG(Salary) OVER (PARTITION BY Department) AS DeptAvg,
 MAX(Salary) OVER (PARTITION BY Department) AS DeptMax,
 MIN(Salary) OVER (PARTITION BY Department) AS DeptMin
 FROM Employees;
-
+```
 ---
 
 ## Phase 7: Performance Optimization
@@ -457,7 +457,7 @@ FROM Employees;
 - **Sort:** Expensive if `ORDER BY` columns aren't indexed.
 - **Segment:** Divides data for `PARTITION BY` (expected).
 
-sql
+```sql
 -- Enable execution plan
 SET STATISTICS IO ON;
 SET STATISTICS TIME ON;
@@ -465,10 +465,10 @@ SET STATISTICS TIME ON;
 SELECT Department, Salary,
 ROW_NUMBER() OVER (PARTITION BY Department ORDER BY Salary DESC) AS Rank
 FROM Employees;
-
+```
 ### 7.2 Indexing Strategy
 
-sql
+```sql
 -- Create index matching PARTITION BY and ORDER BY columns
 CREATE INDEX IX_Employees_Dept_Salary 
 ON Employees (Department, Salary DESC);
@@ -477,12 +477,12 @@ ON Employees (Department, Salary DESC);
 SELECT Department, Salary,
 ROW_NUMBER() OVER (PARTITION BY Department ORDER BY Salary DESC) AS Rank
 FROM Employees;
-
+```
 **Rule:** Index columns in order: `PARTITION BY` columns first, then `ORDER BY` columns.
 
 ### 7.3 Avoid Repeated Window Specifications
 
-sql
+```sql
 -- BAD: Calculates same window function 3 times
 SELECT EmployeeID, Name, Salary,
 Salary - AVG(Salary) OVER (PARTITION BY Department) AS DiffFromAvg,
@@ -501,10 +501,10 @@ Salary - DeptAvg AS DiffFromAvg,
 CAST(100.0 * Salary / DeptAvg AS DECIMAL(5,2)) AS PctOfAvg,
 CASE WHEN Salary > DeptAvg THEN 'Above' ELSE 'Below' END AS Status
 FROM EmployeeStats;
-
+```
 ### 7.4 Frame Specification Performance
 
-sql
+```sql
 -- FAST: Default frame (optimized by SQL Server)
 SELECT SUM(Amount) OVER (ORDER BY Date) AS RunningTotal
 FROM Orders;
@@ -513,17 +513,17 @@ FROM Orders;
 SELECT SUM(Amount) OVER (ORDER BY Date 
 ROWS BETWEEN 3 PRECEDING AND 3 FOLLOWING) AS CenteredTotal
 FROM Orders;
-
+```
 ### 7.5 Batch Mode vs. Row Mode
 
 **SQL Server 2019+ enables batch mode for window functions on rowstore tables:**
-sql
+```sql
 -- Check execution plan for "Batch Mode" indicator
 SELECT Department, Salary,
 AVG(Salary) OVER (PARTITION BY Department) AS DeptAvg
 FROM Employees
 OPTION (USE HINT('DISALLOW_BATCH_MODE')); -- Force row mode for comparison
-
+```
 **Batch mode is faster for:**
 - Large datasets (>100K rows)
 - Multiple window functions in same query
@@ -535,7 +535,7 @@ OPTION (USE HINT('DISALLOW_BATCH_MODE')); -- Force row mode for comparison
 
 ### 8.1 Pitfall: Using Window Functions in WHERE Clause
 
-sql
+```sql
 -- WRONG: Window functions not allowed in WHERE
 SELECT EmployeeID, Name, Salary,
 ROW_NUMBER() OVER (ORDER BY Salary DESC) AS Rank
@@ -551,10 +551,10 @@ FROM Employees
 SELECT EmployeeID, Name, Salary
 FROM RankedEmployees
 WHERE Rank <= 10;
-
+```
 ### 8.2 Pitfall: Forgetting ORDER BY in Frame Specification
 
-sql
+```sql
 -- WRONG: Frame clause requires ORDER BY
 SELECT SUM(Amount) OVER (ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS Total
 FROM Orders; -- ERROR
@@ -563,10 +563,10 @@ FROM Orders; -- ERROR
 SELECT SUM(Amount) OVER (ORDER BY OrderDate 
 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS Total
 FROM Orders;
-
+```
 ### 8.3 Pitfall: NULL Handling in ORDER BY
 
-sql
+```sql
 -- NULLs sort first by default (ASC) or last (DESC)
 SELECT Name, Salary,
 ROW_NUMBER() OVER (ORDER BY Salary) AS Rank
@@ -576,10 +576,10 @@ FROM Employees;
 SELECT Name, Salary,
 ROW_NUMBER() OVER (ORDER BY ISNULL(Salary, 0)) AS Rank
 FROM Employees;
-
+```
 ### 8.4 Pitfall: Mixing Aggregate and Window Functions
 
-sql
+```sql
 -- WRONG: Can't mix GROUP BY aggregates with window functions directly
 SELECT Department, 
 COUNT(*) AS EmpCount,
@@ -597,10 +597,10 @@ SELECT dc.Department, dc.EmpCount,
 AVG(e.Salary) OVER (PARTITION BY e.Department) AS DeptAvg
 FROM DeptCounts dc
 INNER JOIN Employees e ON dc.Department = e.Department;
-
+```
 ### 8.5 Debugging Technique: Isolate Window Specification
 
-sql
+```sql
 -- Test window specification separately
 SELECT EmployeeID, Name, Department, Salary,
 -- Add these debug columns
@@ -608,14 +608,14 @@ COUNT(*) OVER (PARTITION BY Department) AS RowsInPartition,
 ROW_NUMBER() OVER (PARTITION BY Department ORDER BY Salary) AS RowInPartition
 FROM Employees
 ORDER BY Department, Salary;
-
+```
 ---
 
 ## Phase 9: Real-World Use Cases
 
 ### 9.1 Sales Analysis Dashboard
 
-sql
+```sql
 -- Comprehensive sales metrics
 WITH SalesMetrics AS (
 SELECT 
@@ -638,10 +638,10 @@ FROM DailySales
 )
 SELECT * FROM SalesMetrics
 ORDER BY OrderDate;
-
+```
 ### 9.2 Customer Cohort Analysis
 
-sql
+```sql
 -- Analyze customer retention by signup cohort
 WITH FirstPurchase AS (
 SELECT CustomerID,
@@ -669,10 +669,10 @@ FIRST_VALUE(ActiveCustomers) OVER (PARTITION BY Cohort ORDER BY MonthsSinceFirst
 AS DECIMAL(5,2)) AS RetentionRate
 FROM MonthlyActivity
 ORDER BY Cohort, MonthsSinceFirst;
-
+```
 ### 9.3 Inventory Reorder Point Calculation
 
-sql
+```sql
 -- Calculate when to reorder based on usage trends
 SELECT 
 ProductID,
@@ -701,7 +701,7 @@ THEN 'REORDER NOW'
 ELSE 'OK'
 END AS ReorderStatus
 FROM InventoryLog;
-
+```
 ---
 
 ## Phase 10: Action Plan for Implementation
@@ -714,7 +714,7 @@ Audit existing queries for these patterns:
 
 ### Step 2: Performance Baseline
 Before refactoring:
-sql
+```sql
 -- Capture baseline metrics
 SET STATISTICS IO ON;
 SET STATISTICS TIME ON;
@@ -723,22 +723,22 @@ SET STATISTICS TIME ON;
 <your_current_query>
 
 -- Note: Logical reads, CPU time, elapsed time
-
+```
 ### Step 3: Refactor and Compare
-sql
+```sql
 -- Run new query with window functions
 <your_refactored_query>
 
 -- Compare metrics
 -- Expected: Fewer logical reads, similar or better CPU time
-
+```
 ### Step 4: Index Optimization
-sql
+```sql
 -- Create indexes for window function columns
 CREATE INDEX IX_TableName_PartitionOrder 
 ON TableName (PartitionColumn, OrderColumn)
 INCLUDE (OtherColumns);
-
+```
 ### Step 5: Testing Checklist
 - [ ] Verify results match original query (use `EXCEPT` to find differences)
 - [ ] Test with NULL values in partition/order columns
@@ -760,7 +760,7 @@ INCLUDE (OtherColumns);
 
 **Solution:**
 
-sql
+```sql
 WITH TransactionMetrics AS (
 SELECT 
 AccountID,
@@ -789,3 +789,4 @@ TransactionDate,
 Amount,
 Type,
 Runnin
+```
