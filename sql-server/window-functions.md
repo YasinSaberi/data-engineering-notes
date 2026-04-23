@@ -29,7 +29,7 @@ Window functions perform calculations across a set of rows related to the curren
 SELECT Department, AVG(Salary) AS AvgSalary
 FROM Employees
 GROUP BY Department;
-```
+
 -- Result: One row per department
 -- Department | AvgSalary
 -- Sales      | 60000
@@ -45,7 +45,7 @@ FROM Employees;
 -- 1          | Alice | Sales      | 50000  | 60000
 -- 2          | Bob   | Sales      | 70000  | 60000
 -- 3          | Carol | IT         | 80000  | 75000
-
+```
 ### 1.3 Logical Query Processing Order
 
 ```sql
