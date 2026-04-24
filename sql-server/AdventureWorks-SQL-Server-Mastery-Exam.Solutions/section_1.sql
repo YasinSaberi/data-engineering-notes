@@ -28,3 +28,28 @@ WHERE
     )
 
 -- 4
+WITH RankedProducts AS (
+    SELECT 
+        pc.Name AS CategoryName,
+        p.Name AS ProductName,
+        p.ListPrice,
+        ROW_NUMBER() OVER (
+            PARTITION BY pc.Name 
+            ORDER BY p.ListPrice DESC
+        ) AS PriceRank
+    FROM 
+        Production.Product p
+        INNER JOIN Production.ProductSubcategory ps ON p.ProductSubcategoryID = ps.ProductSubcategoryID
+        INNER JOIN Production.ProductCategory pc ON ps.ProductCategoryID = pc.ProductCategoryID
+)
+SELECT 
+    CategoryName,
+    ProductName,
+    ListPrice
+FROM 
+    RankedProducts
+WHERE 
+    PriceRank <= 3
+ORDER BY 
+    CategoryName, 
+    PriceRank;
