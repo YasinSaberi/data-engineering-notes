@@ -7,3 +7,15 @@ SELECT
 FROM
     HumanResources.Employee e
     LEFT JOIN HumanResources.Employee m ON m.OrganizationNode = e.OrganizationNode.GetAncestor(1);
+
+-- 2
+SELECT
+    c.CustomerID
+FROM
+    Sales.Customer c
+    LEFT JOIN Sales.SalesOrderHeader soh ON c.CustomerID = soh.CustomerID
+GROUP BY
+    c.CustomerID
+HAVING
+    MAX(soh.OrderDate) < DATEADD(MONTH, -6, GETDATE())
+    OR MAX(soh.OrderDate) IS NULL;
