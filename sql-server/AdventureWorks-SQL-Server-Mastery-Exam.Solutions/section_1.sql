@@ -26,8 +26,18 @@ WHERE
         FROM
             Sales.SalesOrderDetail sod
     )
-
 -- 4
+SELECT 
+    YEAR(OrderDate) AS OrderYear, 
+    COUNT(SalesOrderID) AS TotalOrders
+FROM 
+    Sales.SalesOrderHeader
+GROUP BY 
+    YEAR(OrderDate)
+ORDER BY 
+    OrderYear;
+
+-- 5
 WITH RankedProducts AS (
     SELECT 
         pc.Name AS CategoryName,
