@@ -141,7 +141,3 @@
 ### 45. Build a dynamic SQL report generator that produces customer KPIs for a given territory and date range. No SQL injection vulnerabilities allowed.
 
 ---
-
-**If you want more sections (e.g., temporal tables, CDC, partitioning, or query tuning drills), say "continue".**
-
-This exam is intentionally dense and unforgiving.
