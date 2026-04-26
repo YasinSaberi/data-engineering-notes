@@ -338,14 +338,3 @@ Result: Incorrect historical analysis
 > **If analysts can’t understand the model in 10 minutes, it’s wrong.**
 
 ---
-
-## Next Actions
-
-1. Choose one business process
-2. Define grain in one sentence
-3. Build a star schema
-4. Validate with real queries
-5. Optimize only after usage proves necessity
-
-
----
