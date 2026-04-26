@@ -1,4 +1,4 @@
--- 1
+-- 6
 SELECT
     e.BusinessEntityID AS EmployeeID,
     e.JobTitle AS EmployeeJobTitle,
@@ -8,7 +8,7 @@ FROM
     HumanResources.Employee e
     LEFT JOIN HumanResources.Employee m ON m.OrganizationNode = e.OrganizationNode.GetAncestor(1);
 
--- 2
+-- 7
 SELECT
     c.CustomerID
 FROM
@@ -19,3 +19,14 @@ GROUP BY
 HAVING
     MAX(soh.OrderDate) < DATEADD(MONTH, -6, GETDATE())
     OR MAX(soh.OrderDate) IS NULL;
+
+-- 8
+SELECT
+    ProductID,
+    COUNT(BusinessEntityID) AS NumberOfVendors
+FROM
+    Purchasing.ProductVendor
+GROUP BY
+    ProductID
+HAVING
+    COUNT(BusinessEntityID) > 1;
