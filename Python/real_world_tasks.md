@@ -40,7 +40,7 @@ order_id,order_date,product,quantity,price
 1010,2024-01-05,Monitor,2,210
 1011,2024-01-06,Mouse,1,15
 1012,2024-01-06,Keyboard,3,25.5
-
+```
 ---
 
 ### Task 2: User Profile Inspection
@@ -58,7 +58,7 @@ You receive user profile data from a marketing team.
 - Produce a clean preview for reporting
 
 **Data Sample (`users.json`)**
-json
+```json
 [
   {"user_id": 1, "name": "Alice", "age": 29, "country": "Germany"},
   {"user_id": 2, "name": "Bob", "age": null, "country": "France"},
@@ -69,7 +69,7 @@ json
   {"user_id": 7, "name": "Grace", "age": 29, "country": "Italy"},
   {"user_id": 8, "name": "Hassan", "age": 45, "country": "Germany"}
 ]
-
+```
 ---
 
 ## ⚙️ Intermediate Level — Cleaning & Analysis
@@ -88,7 +88,7 @@ HR data exported from multiple legacy systems.
 - Prepare a clean dataset ready for analytics
 
 **Data Sample (`employees.csv`)**
-csv
+```csv
 emp_id,name,department,hire_date,salary
 E001,John Smith,IT,2019/03/15,55000
 E002,Sara Khan,HR,15-04-2020,48000
@@ -104,7 +104,7 @@ E011,David Kim,IT,2023-02-14,51000
 E012,Omar Saleh,HR,,46000
 E013,Elena Rossi,Finance,2019-07-30,59000
 E014,Yuki Tanaka,IT,2020-05-18,53000
-
+```
 ---
 
 ### Task 4: Customer Behavior Analysis
@@ -121,7 +121,7 @@ Online store transaction data.
 - Check correlations between numeric features
 
 **Data Sample (`transactions.csv`)**
-csv
+```csv
 customer_id,category,items_purchased,total_amount,visit_duration
 C001,Electronics,3,320,12.5
 C002,Clothing,5,180,25
@@ -138,7 +138,7 @@ C012,Clothing,1,45,5
 C013,Home,2,150,12
 C014,Electronics,4,390,24
 C015,Clothing,3,135,16
-
+```
 ---
 
 ## 🔥 Challenge Level — Real‑World Data Risk
@@ -155,7 +155,7 @@ You are preparing data for executive reporting.
 - Validate numerical correctness
 
 **Data Sample (`performance.csv`)**
-csv
+```csv
 date,region,leads,conversions,revenue
 2024-01-05,EU,120,15,15000
 2024-01-18,EU,95,10,9800
@@ -175,7 +175,7 @@ date,region,leads,conversions,revenue
 2024-05-28,US,225,33,36000
 2024-06-03,EU,170,24,24000
 2024-06-18,US,250,38,42000
-
+```
 ---
 
 ### Task 6: Data Integrity & Risk Detection
@@ -192,7 +192,7 @@ You suspect silent data issues before model training.
 - Prepare a data risk report
 
 **Data Sample (`sensor_data.csv`)**
-csv
+```csv
 timestamp,device_id,temperature,humidity,pressure
 2024-07-01 10:00,A1,22.5,45,1012
 2024-07-01 10:05,A1,22.6,46,1011
@@ -209,7 +209,7 @@ timestamp,device_id,temperature,humidity,pressure
 2024-07-01 10:10,C3,25.3,42,1017
 2024-07-01 10:15,C3,25.4,43,1018
 2024-07-01 10:20,C3,25.5,44,1019
-
+```
 ---
 
 ## 📌 Final Note
@@ -220,10 +220,3 @@ Treat this as **interview‑level preparation**, not tutorial practice.
 
 
 ---
-
-If you want next:
-- ✅ A **folder structure** for your GitHub repo  
-- ✅ A **README with learning milestones**  
-- ✅ A **separate “solution” branch strategy**  
-
-Say which one.
