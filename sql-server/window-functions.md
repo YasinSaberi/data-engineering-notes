@@ -129,7 +129,6 @@ Dave  | 85    | 3
 SELECT Name, Salary,
 NTILE(4) OVER (ORDER BY Salary) AS SalaryQuartile
 FROM Employees;
-```
 **Output:**
 
 | Name  | Salary | SalaryQuartile |
@@ -141,6 +140,7 @@ FROM Employees;
 | `Frank` | 90000  | 3 |
 | `Grace` | 100000 | 4 |
 | `Henry` | 110000 | 4 |
+```
 
 **Use case:** Percentile analysis, A/B testing groups.
 
@@ -171,13 +171,14 @@ FROM Orders;
 SELECT OrderDate, Amount,
 SUM(Amount) OVER (ORDER BY OrderDate) AS RunningTotal
 FROM Orders;
-```
+
 **Output:**
 
 OrderDate  | Amount | RunningTotal
 2024-01-01 | 100    | 100
 2024-01-02 | 150    | 250
 2024-01-03 | 200    | 450
+```
 
 ### 3.2 Moving Averages
 
@@ -187,7 +188,7 @@ SELECT OrderDate, Amount,
 AVG(Amount) OVER (ORDER BY OrderDate 
 ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS MovingAvg7Day
 FROM DailySales;
-```
+
 **Output:**
 
 OrderDate  | Amount | MovingAvg7Day
@@ -196,6 +197,7 @@ OrderDate  | Amount | MovingAvg7Day
 2024-01-03 | 200    | 150.00  -- Average of 3 rows
 ...
 2024-01-08 | 180    | 165.71  -- Average of 7 rows
+```
 
 ### 3.3 Comparative Analysis (Current vs. Previous)
 
@@ -207,13 +209,14 @@ Sales - LAG(Sales, 1) OVER (ORDER BY Month) AS SalesChange,
 CAST(100.0 * (Sales - LAG(Sales, 1) OVER (ORDER BY Month)) / 
 LAG(Sales, 1) OVER (ORDER BY Month) AS DECIMAL(5,2)) AS PctChange
 FROM MonthlySales;
-```
+
 **Output:**
 
 Month   | Sales | PrevMonthSales | SalesChange | PctChange
 2024-01 | 10000 | NULL           | NULL        | NULL
 2024-02 | 12000 | 10000          | 2000        | 20.00
 2024-03 | 11000 | 12000          | -1000       | -8.33
+```
 
 ### 3.4 Partition-Level Aggregates
 
@@ -224,7 +227,7 @@ AVG(Salary) OVER (PARTITION BY Department) AS DeptAvg,
 SUM(Salary) OVER (PARTITION BY Department) AS DeptTotal,
 CAST(100.0 * Salary / SUM(Salary) OVER (PARTITION BY Department) AS DECIMAL(5,2)) AS PctOfDeptTotal
 FROM Employees;
-```
+
 **Output:**
 
 EmployeeID | Name  | Department | Salary | DeptAvg | DeptTotal | PctOfDeptTotal
@@ -232,6 +235,7 @@ EmployeeID | Name  | Department | Salary | DeptAvg | DeptTotal | PctOfDeptTotal
 2          | Bob   | Sales      | 70000  | 60000   | 120000    | 58.33
 3          | Carol | IT         | 80000  | 77500   | 155000    | 51.61
 4          | Dave  | IT         | 75000  | 77500   | 155000    | 48.39
+```
 
 ---
 
@@ -302,7 +306,7 @@ SELECT OrderDate, Amount,
 SUM(Amount) OVER (ORDER BY OrderDate 
 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS Last3DaysTotal
 FROM Orders;
-```
+
 **Output:**
 
 OrderDate  | Amount | Last3DaysTotal
@@ -310,6 +314,7 @@ OrderDate  | Amount | Last3DaysTotal
 2024-01-02 | 150    | 250  -- 2 rows
 2024-01-03 | 200    | 450  -- 3 rows (100+150+200)
 2024-01-04 | 180    | 530  -- 3 rows (150+200+180)
+```
 
 ### 5.3 RANGE - Logical Value Range
 
