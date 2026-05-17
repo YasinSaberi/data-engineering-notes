@@ -93,15 +93,15 @@ FROM Employees;
 SELECT Name, Score,
 RANK() OVER (ORDER BY Score DESC) AS Rank
 FROM TestScores;
-```
+
 **Output:**
 
-Name  | Score | Rank
-Alice | 95    | 1
-Bob   | 95    | 1
-Carol | 90    | 3  -- Skips rank 2
-Dave  | 85    | 4
-
+-- Name  | Score | Rank
+-- Alice | 95    | 1
+-- Bob   | 95    | 1
+-- Carol | 90    | 3  -- Skips rank 2
+-- Dave  | 85    | 4
+```
 **Use case:** Sports rankings, leaderboards where ties matter.
 
 ### 2.3 DENSE_RANK() - Ranking Without Gaps
