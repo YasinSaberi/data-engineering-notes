@@ -133,14 +133,14 @@ FROM Employees;
 **Output:**
 
 | Name  | Salary | SalaryQuartile |
-| Alice | 40000  | 1 |
-| Bob   | 50000  | 1 |
-| Carol | 60000  | 2 |
-| Dave  | 70000  | 2 |
-| Eve   | 80000  | 3 |
-| Frank | 90000  | 3 |
-| Grace | 100000 | 4 |
-| Henry | 110000 | 4 |
+| `Alice` | 40000  | 1 |
+| `Bob`   | 50000  | 1 |
+| `Carol` | 60000  | 2 |
+| `Dave`  | 70000  | 2 |
+| `Eve`   | 80000  | 3 |
+| `Frank` | 90000  | 3 |
+| `Grace` | 100000 | 4 |
+| `Henry` | 110000 | 4 |
 
 **Use case:** Percentile analysis, A/B testing groups.
 
