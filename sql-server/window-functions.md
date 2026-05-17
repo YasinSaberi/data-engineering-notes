@@ -75,15 +75,15 @@ SELECT EmployeeID, Name, Department, Salary,
 ROW_NUMBER() OVER (ORDER BY Salary DESC) AS OverallRank,
 ROW_NUMBER() OVER (PARTITION BY Department ORDER BY Salary DESC) AS DeptRank
 FROM Employees;
-```
+
 **Output:**
 
-EmployeeID | Name  | Department | Salary | OverallRank | DeptRank
-3          | Carol | IT         | 80000  | 1           | 1
-4          | Dave  | IT         | 75000  | 2           | 2
-2          | Bob   | Sales      | 70000  | 3           | 1
-1          | Alice | Sales      | 50000  | 4           | 2
-
+-- EmployeeID | Name  | Department | Salary | OverallRank | DeptRank
+-- 3          | Carol | IT         | 80000  | 1           | 1
+-- 4          | Dave  | IT         | 75000  | 2           | 2
+-- 2          | Bob   | Sales      | 70000  | 3           | 1
+-- 1          | Alice | Sales      | 50000  | 4           | 2
+```
 **Use case:** Pagination, deduplication (keep first occurrence).
 
 ### 2.2 RANK() - Ranking with Gaps
