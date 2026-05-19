@@ -30,3 +30,19 @@ GROUP BY
     ProductID
 HAVING
     COUNT(BusinessEntityID) > 1;
+
+-- 9
+SELECT
+    CustomerID,
+    CAST(OrderDate AS DATE) AS PureOrderDate,
+    COUNT(SalesOrderID) AS OrdersPlaced
+FROM
+    Sales.SalesOrderHeader
+GROUP BY
+    CAST(OrderDate AS DATE), 
+    CustomerID
+HAVING
+    COUNT(SalesOrderID) > 1
+ORDER BY 
+    OrdersPlaced DESC, 
+    CustomerID;
