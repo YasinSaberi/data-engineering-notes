@@ -46,3 +46,24 @@ HAVING
 ORDER BY 
     OrdersPlaced DESC, 
     CustomerID;
+
+-- 10
+WITH TerritoryPerformance AS (
+    SELECT
+        TerritoryID,
+        AVG(SalesYTD) AS AvgSalesPerRep
+    FROM 
+        Sales.SalesPerson
+    GROUP BY
+        TerritoryID
+)
+SELECT
+    sp.BusinessEntityID,
+    sp.TerritoryID,
+    sp.SalesYTD,
+    tp.AvgSalesPerRep
+FROM 
+    Sales.SalesPerson AS sp 
+    INNER JOIN TerritoryPerformance AS tp ON sp.TerritoryID = tp.TerritoryID
+WHERE 
+    sp.SalesYTD < tp.AvgSalesPerRep
